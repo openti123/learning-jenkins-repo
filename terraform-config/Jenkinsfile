@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+       parameters {
+        //string(name: 's3_bucket_name', description: 'Name of s3 bucket you want to create')
+
+        choice(name: 'terraform_Action', choices: ['', 'apply', 'destroy'], description: 'pass the action you want to perform in terraform')
+
+      
+    }
+
+
+    stages {
+        // ## clone the repository
+        stage('Clone Repository') {
+            steps {
+                script{
+                   git branch: 'main', credentialsId: '24b31630-17f6-4483-838f-406f5a501345', url: 'https://github.com/openti123/learning-jenkins-repo.git'
+                }
+                
+
+                
+               
+            }
+            
+        }
+        // Run my terraform init.. cd into the folder where the terraform commands are
+        stage('Terraform init') {
+            steps {
+                script{
+                dir('terraform-config') {
+                // some block -- replace with terraform command
+                sh "terraform init"
+                }
+            }
+                
+                
+            }
+        }
+        stage('Terraform plan') {
+            steps {
+                script{
+                dir('terraform-config') {
+                // some block -- replace with terraform command
+                sh "terraform plan"
+                }
+            }
+                
+                
+            }
+        }
+        stage('Terraform apply') {
+            steps {
+                script{
+                dir('terraform-config') {
+                // some block -- replace with terraform command
+                sh "terraform ${params.terraform_Action} --auto-approve"
+                }
+            }
+                
+                
+            }
+        }
+        
+    }
+}
